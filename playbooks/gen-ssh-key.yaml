@@ -1,0 +1,15 @@
+---
+- name: gen ssh key
+  hosts: all
+
+  vars_prompt:
+    - name: machine_name
+      prompt: machine name
+
+  tasks:
+    - name: generate key
+      openssh_keypair:
+        state: present
+        path: ~/.ssh/id_ed25519
+        type: ed25519
+        comment: "{{ machine_name }}"

@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+source .env
+
+export machine_passphrase
+
+aws --region eu-west-2 ec2 start-instances \
+  --instance-ids "$(terraform output -raw id)"
+
+# pick up new ip
+bin/refresh
+bin/ip
+
+bin/playbook wait-for-boot
+bin/vscode

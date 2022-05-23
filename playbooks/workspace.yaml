@@ -1,0 +1,11 @@
+---
+- name: workspace
+  hosts: all
+
+  tasks:
+    - name: create development directory
+      ansible.builtin.file:
+        path: "/home/{{ ansible_ssh_user }}/development"
+        state: directory
+        mode: '0755'
+        owner: "{{ ansible_ssh_user }}"

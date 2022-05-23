@@ -1,0 +1,39 @@
+---
+- name: brew
+  hosts: all
+
+  tasks:
+    # in noninteracive mode brew installs to /home/linuxbrew
+    - name: setup /home/linuxbrew
+      become: true
+      file:
+        path: /home/linuxbrew
+        state: directory
+        mode: 0755
+        owner: geoff
+        group: geoff
+      register: brew_dir
+
+    - name: install brew
+      shell: |
+        export NONINTERACTIVE=1
+        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+      args:
+        executable: /bin/bash
+      when: brew_dir.changed
+
+    - name: add brew to .zshrc
+      lineinfile:
+        path: "/home/{{ ansible_ssh_user }}/.zshrc"
+        line: 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"'
+
+    - name: install build-essential
+      become: true
+      apt:
+        name: build-essential
+
+    - name: install gcc
+      homebrew:
+        name: gcc
+        state: present
+        path: /home/linuxbrew/.linuxbrew/bin

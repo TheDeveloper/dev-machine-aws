@@ -1,0 +1,9 @@
+- name: git
+  hosts: all
+
+  tasks:
+    - name: install git
+      homebrew:
+        name: git
+        state: present
+        path: /home/linuxbrew/.linuxbrew/bin

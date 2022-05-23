@@ -1,0 +1,26 @@
+- name: wsl dns
+  hosts: all
+
+  tasks:
+    - name: set dns
+      become: true
+      lineinfile:
+        line: nameserver 1.1.1.1
+        path: /etc/resolv.conf
+        regexp: ^nameserver
+        create: true
+
+    - name: set /etc/wsl.conf
+      become: true
+      template:
+        src: ../templates/wsl.conf
+        dest: /etc/wsl.conf
+
+    # https://www.jeffgeerling.com/blog/2019/how-idempotently-change-file-attributes-eg-immutable-ansible
+    - name: make /etc/resolv.conf immutable
+      become: true
+      file:
+        path: /etc/resolv.conf
+        attr: +i
+      register: resolv_file
+      changed_when: "'i' not in resolv_file.diff.before.attributes"

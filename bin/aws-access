@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+set -e
+
+source .venv/bin/activate
+source ./.env
+
+echo "Go to https://console.aws.amazon.com/iamv2/home?#/users to create a user for this environment."
+
+ansible-playbook \
+  -i "$DEVMACHINE_NAME," \
+  playbooks/aws-access.yaml \
+  --extra-vars \
+    "machine_name=$DEVMACHINE_NAME"

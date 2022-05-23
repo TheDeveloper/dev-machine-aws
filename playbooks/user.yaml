@@ -1,0 +1,36 @@
+---
+- name: user
+  hosts: all
+
+  vars_prompt:
+    - name: machine_user
+      prompt: machine user
+    - name: password
+      prompt: password
+      private: true
+    - name: salt
+      prompt: password salt
+      private: true
+
+  tasks:
+    - name: set up user {{ machine_user }}
+      become: true
+      ansible.builtin.user:
+        name: "{{ machine_user }}"
+        groups: "sudo"
+        shell: /bin/bash
+        password: "{{ password | password_hash('sha512', salt) }}"
+      no_log: true
+
+    # - name: sudoers
+      # ansible.builtin.template:
+      #   src: ../../templates/sudo.j2
+      #   dest: "/etc/sudoers.d/{{machine_user}}"
+      #   mode: 0440
+      #   validate: '/usr/sbin/visudo -cf %s'
+
+    - name: auth login to '{{ machine_user }}' from this machine
+      ansible.posix.authorized_key:
+        user: "{{ machine_user }}"
+        state: present
+        key: "{{ lookup('file', '~/.ssh/id_ed25519.pub') }} "

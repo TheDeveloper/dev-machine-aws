@@ -1,0 +1,19 @@
+---
+- name: ssh-security
+  hosts: all
+  become: true
+
+  tasks:
+    - name: disable root login
+      lineinfile:
+        dest: /etc/ssh/sshd_config
+        line: PermitRootLogin no
+        regexp: ^PermitRootLogin
+        state: present
+      register: ssh_config
+
+    - name: restart ssh
+      systemd:
+        name: sshd
+        state: restarted
+      when: ssh_config is changed

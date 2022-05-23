@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+set -e
+
+rm -f key key.pub
+ssh-keygen -t ed25519 -N '' -f ./key

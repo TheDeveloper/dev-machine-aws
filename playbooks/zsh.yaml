@@ -1,0 +1,25 @@
+---
+- name: zsh
+  hosts: all
+
+  roles:
+    - role: gantsign.antigen
+      users:
+        - username: "{{ ansible_ssh_user }}"
+          antigen_libraries:
+            - name: oh-my-zsh
+          antigen_theme:
+            name: robbyrussell
+          antigen_bundles:
+            # Bundles from the default repo (robbyrussell's oh-my-zsh).
+            - name: git
+            - name: command-not-found
+            - name: zsh-syntax-highlighting
+              url: zsh-users/zsh-syntax-highlighting
+
+  tasks:
+    - name: disable bell
+      lineinfile:
+        path: /home/{{ ansible_ssh_user }}/.zshrc
+        line: unsetopt BEEP
+        state: present

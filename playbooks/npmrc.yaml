@@ -1,0 +1,15 @@
+# https://docs.ansible.com/ansible/latest/collections/community/general/git_config_module.html
+---
+- name: npmrc
+  hosts: all
+  vars_prompt:
+    - name: token
+      prompt: github access token
+      private: true
+
+  tasks:
+    - name: setup .npmrc
+      lineinfile:
+        path: ~/.npmrc
+        line: "//npm.pkg.github.com/:_authToken={{ token }}"
+        create: true

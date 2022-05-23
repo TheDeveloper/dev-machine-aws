@@ -1,0 +1,10 @@
+---
+- name: firefox
+  hosts: all
+
+  tasks:
+    - name: install
+      become: true
+      apt:
+        pkg:
+          - firefox

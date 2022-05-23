@@ -1,0 +1,10 @@
+- name: docker-prune
+  hosts: all
+  become: yes
+
+  tasks:
+    - name: docker-prune
+      template:
+        src: ../templates/docker-prune
+        dest: /usr/local/bin/docker-prune
+        mode: 0755

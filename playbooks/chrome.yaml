@@ -1,0 +1,20 @@
+---
+- name: chrome
+  hosts: all
+
+  tasks:
+    - name: download chrome
+      uri:
+        url: https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+        dest: ./chrome.deb
+        creates: ./chrome.deb
+    - name: install deps
+      become: true
+      apt:
+        pkg:
+          - fonts-liberation
+          - xdg-utils
+    - name: install chrome
+      become: true
+      apt:
+        deb: ./chrome.deb

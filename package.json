@@ -1,0 +1,22 @@
+{
+  "name": "dev-1",
+  "version": "1.0.0",
+  "description": "Set up a dev machine on aws.",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "watch": "rm -rf dist && tsc -w || exit 0",
+    "build": "rm -rf dist && tsc || exit 0"
+  },
+  "keywords": [],
+  "author": "Geoff Wagstaff <mail@geoffwagstaff.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^16.11.1",
+    "make-promises-safe": "^5.1.0",
+    "typescript": "^4.4.4",
+    "zx": "^4.2.0"
+  }
+}

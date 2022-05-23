@@ -1,0 +1,16 @@
+---
+- name: expand fs
+  hosts: all
+  become: true
+
+  vars:
+    disk: /dev/nvme0n1
+    partition: /dev/nvme0n1p1
+
+  tasks:
+    - name: grow {{ partition }}
+      shell: |
+        sudo growpart {{ disk }} 1
+        sudo resize2fs {{ partition }}
+      args:
+        executable: /bin/bash

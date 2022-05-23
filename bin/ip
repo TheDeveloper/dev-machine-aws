@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+source .venv/bin/activate
+source .env
+
+ip=$(terraform output -raw ip)
+echo $ip
+
+storm edit "$machine_name" "$machine_user@$ip" \
+  --o "Port=$ssh_port" &>/dev/null
+
+if [ ! -z "$WSL_DISTRO_NAME" ]
+then
+  cp ~/.ssh/config "$wsl_path/.ssh/config"
+fi

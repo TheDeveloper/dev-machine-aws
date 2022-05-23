@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+
+set -e
+set -x
+
+source .venv/bin/activate
+source ./.env
+
+playbook="$1"
+shift
+
+if [ -z "$AS_USER" ]
+then user=$machine_user
+else user=$AS_USER
+fi
+
+ansible-playbook \
+  -i "$machine_name," \
+  -u "$user" \
+  "$@" \
+  "playbooks/$playbook.yaml"

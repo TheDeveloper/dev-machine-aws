@@ -1,0 +1,12 @@
+---
+- name: package cache
+  hosts: all
+
+  tasks:
+    - name: update package cache
+      apt:
+        update_cache: true
+        # pkg:
+          # - unzip
+          # - awscli
+

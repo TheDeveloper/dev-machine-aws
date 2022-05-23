@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+
+source .venv/bin/activate
+source .env
+
+set -e
+
+size="$1"
+volume="$(terraform output -raw volume_id)"
+
+read -p "set $volume size to ${size}G. Is this correct? y/n:" -n 1 -r response
+
+if [ "$response" != "y" ]
+then
+  echo
+  echo "Aborting..."
+  exit 1
+fi
+
+echo
+echo "modifying..."
+
+aws --region eu-west-2 ec2 modify-volume \
+  --volume-id "$volume" \
+  --size "$size"
+
+sleep 10
+
+AS_USER="$do_user" bin/playbook expand-fs

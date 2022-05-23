@@ -1,0 +1,99 @@
+---
+- name: aws access
+  hosts: all
+
+  vars_prompt:
+    - name: machine_name
+      prompt: dev machine name
+    - name: aws_access_key_id
+      prompt: access key id
+      private: yes
+    - name: aws_secret_access_key
+      prompt: secret access key
+      private: yes
+    - name: profile_name
+      prompt: profile name
+    - name: aws_vault_passphrase
+      prompt: aws vault passphrase
+      private: yes
+
+  tasks:
+    - name: install pass
+      become: yes
+      apt:
+        pkg:
+          - pass
+
+    - name: create gpg key template
+      become_user: ubuntu
+      ansible.builtin.shell: |
+        # https://www.gnupg.org/documentation/manuals/gnupg/Unattended-GPG-key-generation.html
+        cat > foo <<EOT
+        %echo Generating a basic OpenPGP key
+        Key-Type: default
+        Subkey-Type: default
+        Name-Real: {{ machine_name }}
+        Name-Email: {{ machine_name }}@localhost
+        Expire-Date: 0
+        Passphrase: {{ aws_vault_passphrase }}
+        # Do a commit here, so that we can later print "done" :-)
+        %commit
+        %echo done
+        EOT
+      args:
+        executable: /bin/bash
+        chdir: "$HOME"
+        creates: "$HOME/foo"
+
+    - name: set up gpg key
+      become_user: ubuntu
+      ansible.builtin.shell: |
+        gpg --batch --gen-key foo
+      args:
+        executable: /bin/bash
+        chdir: "$HOME"
+        creates: "$HOME/.gnupg"
+
+    - name: remove gpg key template
+      become_user: ubuntu
+      ansible.builtin.file:
+        path: "$HOME/foo"
+        state: absent
+
+    - name: set up pass store
+      become_user: ubuntu
+      ansible.builtin.shell: |
+        pass init {{ machine_name }}
+      args:
+        executable: /bin/bash
+        chdir: "$HOME"
+        creates: "$HOME/.password-store"
+
+    - name: set aws vault backend
+      ansible.builtin.lineinfile:
+        path: ~/.zshrc
+        line: export AWS_VAULT_BACKEND="pass"
+        create: yes
+
+    - name: set gpg tty
+      become_user: ubuntu
+      blockinfile:
+        dest: "$HOME/.zshrc"
+        block: |
+          export GPG_TTY=$(tty)
+        insertbefore: EOF
+        create: yes
+
+    - name: add access key
+      become_flags: -i
+      become_user: ubuntu
+      ansible.builtin.expect:
+        command: |
+          /bin/bash -l -c '
+            export AWS_VAULT_BACKEND="pass"
+            export AWS_ACCESS_KEY_ID="{{ aws_access_key_id }}"
+            export AWS_SECRET_ACCESS_KEY="{{ aws_secret_access_key }}"
+            aws-vault add --env {{ profile_name }}
+          '
+        responses:
+          (?i)password: "{{ aws_vault_passphrase }}"

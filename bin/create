@@ -1,0 +1,66 @@
+#!/usr/bin/env bash
+
+set -e
+
+source .venv/bin/activate && \
+source ./.env
+
+if [ ! -f key ]
+then
+ssh-keygen -t ed25519 -N '' -f ./key
+fi
+
+# make sure key is in ssh agent
+if [ -z "$SSH_AUTH_SOCK" ]
+then eval "$(ssh-agent)"
+fi
+ssh-add ~/.ssh/id_ed25519
+
+export machine_passphrase
+
+echo -n "machine passphrase:"
+read -s machine_passphrase
+echo ''
+
+export github_access_token
+echo -n "github access token for .npmrc:"
+read -s github_access_token
+
+terraform apply \
+  -var "name=$machine_name" \
+  -var "instance_type=$instance_type" \
+  -var "region=$region" \
+  -var "ami_id=$ami_id" \
+  -var "vol_size=$vol_size" \
+  -var "vpc_id=$vpc_id" \
+  -var "subnet=$subnet" \
+  -var "ssh_port=22"
+
+machine_ip="$(terraform output -raw ip)"
+
+ansible-playbook \
+  --private-key "$(pwd)/key" \
+  -i "$machine_ip," \
+  -u "$do_user" \
+  -e "ssh_port=$ssh_port" \
+  --become \
+  playbooks/ssh.yaml
+
+storm add "$machine_name" "$do_user@$machine_ip" \
+  --o "ForwardAgent=yes" \
+  --o "Port=$ssh_port" \
+  --o "StrictHostKeyChecking=no" \
+  --o "UserKnownHostsFile=/dev/null"
+
+terraform apply \
+  -auto-approve \
+  -var "name=$machine_name" \
+  -var "instance_type=$instance_type" \
+  -var "region=$region" \
+  -var "ami_id=$ami_id" \
+  -var "vol_size=$vol_size" \
+  -var "vpc_id=$vpc_id" \
+  -var "subnet=$subnet" \
+  -var "ssh_port=$ssh_port"
+
+source ./bin/playbooks

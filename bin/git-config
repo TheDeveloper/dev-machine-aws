@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+set -e
+
+source .venv/bin/activate
+source ./.env
+
+export git_name=$(git config --global user.name)
+export git_email=$(git config --global user.email)
+export git_editor=$(git config --global core.editor)
+ansible-playbook \
+  -i "$machine_name," \
+  -u "$machine_user" \
+  -e "username=\"$git_name\"" \
+  -e "email=$git_email" \
+  -e "editor=$git_editor" \
+  playbooks/git-config.yaml

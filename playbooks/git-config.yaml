@@ -1,0 +1,41 @@
+# https://docs.ansible.com/ansible/latest/collections/community/general/git_config_module.html
+---
+- name: git config
+  hosts: all
+  become_user: ubuntu
+  vars_prompt:
+    - name: email
+      prompt: git user.email
+    - name: username
+      prompt: git user.name
+
+  tasks:
+    - name: set core.editor
+      community.general.git_config:
+        name: core.editor
+        scope: global
+        value: vim
+    - name: set user.email
+      community.general.git_config:
+        name: user.email
+        scope: global
+        value: "{{ email }}"
+    - name: set user.name
+      community.general.git_config:
+        name: user.name
+        scope: global
+        value: "{{ username }}"
+    - name: set init.defaultBranch
+      community.general.git_config:
+        name: init.defaultBranch
+        scope: global
+        value: main
+    # set behaviour when pulling from a branch that has diverged
+    #     git config pull.rebase false  # merge
+    #     git config pull.rebase true   # rebase
+    #     git config pull.ff only       # fast-forward only
+    - name: set pull.rebase
+      community.general.git_config:
+        name: pull.rebase
+        scope: global
+        value: false

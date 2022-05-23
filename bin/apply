@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+set -e
+
+source .venv/bin/activate
+source ./.env
+
+terraform apply \
+  -var "name=$machine_name" \
+  -var "instance_type=$instance_type" \
+  -var "region=$region" \
+  -var "ami_id=$ami_id" \
+  -var "vol_size=$vol_size" \
+  -var "vpc_id=$vpc_id" \
+  -var "subnet=$subnet" \
+  -var "ssh_port=$ssh_port"

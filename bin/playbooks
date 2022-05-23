@@ -1,0 +1,174 @@
+#!/usr/bin/env bash
+
+set -e
+
+source .venv/bin/activate && \
+source ./.env
+
+if [ -z "$machine_passphrase" ]
+then
+  echo -n "machine passphrase:"
+  read -s machine_passphrase
+fi
+
+export github_access_token
+if [ -z "$github_access_token" ]
+then
+  echo -n "github access token for .npmrc:"
+  read -s github_access_token
+fi
+
+set -u
+
+ansible-playbook \
+  -i "$machine_name," \
+  -u "$do_user" \
+  --become \
+  playbooks/ssh-authorised-keys.yaml
+
+ansible-playbook \
+  -i "$machine_name," \
+  -u "$do_user" \
+  --become \
+  playbooks/swap.yaml
+
+ansible-playbook \
+  -i "$machine_name," \
+  -u "$do_user" \
+  --become \
+  playbooks/package-cache.yaml
+
+ansible-playbook \
+  -i "$machine_name," \
+  -u "$do_user" \
+  --become \
+  playbooks/base-packages.yaml
+
+ansible-playbook \
+  -i "$machine_name," \
+  -u "$do_user" \
+  --become \
+  playbooks/locale.yaml
+
+ansible-playbook \
+  -i "$machine_name," \
+  -u "$do_user" \
+  --become \
+  playbooks/timezone.yaml
+
+ansible-playbook \
+  -i "$machine_name," \
+  -u "$do_user" \
+  -e "machine_user=$machine_user" \
+  -e "password=$machine_passphrase" \
+  --become \
+  playbooks/user.yaml
+
+machine_ip="$(terraform output -raw ip)"
+
+storm edit "$machine_name" "$machine_user@$machine_ip" \
+  --o "Port=$ssh_port"
+
+ansible-playbook \
+  -i "$machine_name," \
+  -u "$machine_user" \
+  playbooks/ssh-authorised-keys.yaml
+
+ansible-playbook \
+  -i "$machine_name," \
+  -u "$machine_user" \
+  -e "machine_name=$machine_name" \
+  playbooks/gen-ssh-key.yaml
+
+ansible-playbook \
+  -i "$machine_name," \
+  -u "$machine_user" \
+  playbooks/workspace.yaml
+
+ansible-playbook \
+  -i "$machine_name," \
+  -e "machine_user=$machine_user" \
+  -e "ansible_become_pass=$machine_passphrase" \
+  playbooks/zsh.yaml
+
+ansible-playbook \
+  -i "$machine_name," \
+  -u "$machine_user" \
+  -e "ansible_become_pass=$machine_passphrase" \
+  playbooks/aws-vault.yaml
+
+ansible-playbook \
+  -i "$machine_name," \
+  -u "$machine_user" \
+  -e "ansible_become_pass=$machine_passphrase" \
+  playbooks/terraform.yaml
+
+ansible-playbook \
+  -i "$machine_name," \
+  -u "$machine_user" \
+  playbooks/nvm.yaml
+
+export git_name=$(git config --global user.name)
+export git_email=$(git config --global user.email)
+export git_editor=$(git config --global core.editor)
+ansible-playbook \
+  -i "$machine_name," \
+  -u "$machine_user" \
+  -e "username=\"$git_name\"" \
+  -e "email=$git_email" \
+  -e "editor=$git_editor" \
+  playbooks/git-config.yaml
+
+bin/npmrc
+
+ansible-playbook \
+  -i "$machine_name," \
+  -u "$machine_user" \
+  -e "ansible_become_pass=$machine_passphrase" \
+  playbooks/docker.yaml
+
+ansible-playbook \
+  -i "$machine_name," \
+  -u "$machine_user" \
+  -e "ansible_become_pass=$machine_passphrase" \
+  -e "vnc_password=$machine_passphrase" \
+  playbooks/vnc.yaml
+
+ansible-playbook \
+  -i "$machine_name," \
+  -u "$machine_user" \
+  -e "ansible_become_pass=$machine_passphrase" \
+  playbooks/chrome.yaml
+
+ansible-playbook \
+  -i "$machine_name," \
+  -u "$machine_user" \
+  -e "ansible_become_pass=$machine_passphrase" \
+  playbooks/firefox.yaml
+
+ansible-playbook \
+  -i "$machine_name," \
+  -u "$machine_user" \
+  -e "ansible_become_pass=$machine_passphrase" \
+  playbooks/1password.yaml
+
+ansible-playbook \
+  -i "$machine_name," \
+  -u "$machine_user" \
+  -e "ansible_become_pass=$machine_passphrase" \
+  playbooks/vscode.yaml
+
+ansible-playbook \
+  -i "$machine_name," \
+  -u "$machine_user" \
+  playbooks/xfwm4.yaml
+
+AS_USER=ubuntu bin/playbook inactivity --extra-vars ssh_port="$ssh_port"
+
+bin/playbook brew-package --extra-vars package=thefuck
+
+ansible-playbook \
+  -i "$machine_name," \
+  -u "$do_user" \
+  --become \
+  playbooks/upgrade.yaml

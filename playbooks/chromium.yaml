@@ -1,0 +1,12 @@
+---
+- name: chromium
+  hosts: all
+
+  tasks:
+    - name: install
+      become: true
+      apt:
+        pkg:
+          - fonts-liberation
+          - xdg-utils
+          - chromium-browser

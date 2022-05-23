@@ -1,0 +1,14 @@
+---
+- name: brew
+  hosts: all
+
+  vars_prompt:
+    - name: package
+      prompt: package name
+
+  tasks:
+    - name: install {{ package }}
+      homebrew:
+        name: "{{ package }}"
+        state: present
+        path: /home/linuxbrew/.linuxbrew/bin

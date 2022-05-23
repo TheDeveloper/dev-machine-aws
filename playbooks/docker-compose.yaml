@@ -1,0 +1,10 @@
+---
+- name: brew
+  hosts: all
+
+  tasks:
+    - name: install docker-compose
+      homebrew:
+        name: docker-compose
+        state: present
+        path: /home/linuxbrew/.linuxbrew/bin

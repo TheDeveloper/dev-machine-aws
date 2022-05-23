@@ -1,0 +1,40 @@
+---
+- name: ssh
+  hosts: all
+  gather_facts: false
+
+  vars_prompt:
+    - name: ssh_port
+      prompt: ssh port
+
+  tasks:
+    - name: wait for host
+      wait_for_connection:
+
+    - name: gather facts
+      setup:
+
+    - name: auth login from this machine
+      ansible.posix.authorized_key:
+        user: "{{ ansible_ssh_user }}"
+        state: present
+        key: "{{ lookup('file', '~/.ssh/id_ed25519.pub') }} "
+
+    - name: remove setup key
+      ansible.posix.authorized_key:
+        user: "{{ ansible_ssh_user }}"
+        state: absent
+        key: "{{ lookup('file', '../key.pub') }} "
+
+    - name: change ssh port to {{ ssh_port }}
+      lineinfile:
+        dest: /etc/ssh/sshd_config
+        line: Port {{ ssh_port }}
+        regexp: ^Port
+      notify: restart ssh
+
+  handlers:
+    - name: restart ssh
+      systemd:
+        name: sshd
+        state: restarted

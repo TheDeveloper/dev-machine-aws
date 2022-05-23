@@ -1,0 +1,15 @@
+---
+- name: xfwm4
+  hosts: all
+
+  tasks:
+    - name: set box move
+      command: xfconf-query -c xfwm4 -p /general/box_move --set true
+    - name: set box resize
+      command: xfconf-query -c xfwm4 -p /general/box_resize --set true
+    - name: set desktop
+      command: xfconf-query -c xfce4-desktop -p /backdrop/screen0/monitorVNC-0/workspace0/image-style --set 0
+    - name: set window theme
+      command: xfconf-query -c xfwm4 -p /general/theme --set Greybird-dark
+    - name: set window content theme
+      command: xfconf-query -c xsettings -p /Net/ThemeName --set Greybird-dark

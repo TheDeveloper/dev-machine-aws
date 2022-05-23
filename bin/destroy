@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+
+source .venv/bin/activate
+source ./.env
+
+host_exists() {
+  storm list | grep "$machine_name" > /dev/null
+}
+
+if host_exists
+then storm delete "$machine_name"
+fi
+
+terraform destroy \
+-var "name=$machine_name" \
+-var "instance_type=$instance_type" \
+-var "region=$region" \
+-var "ami_id=$ami_id" \
+-var "vol_size=$vol_size" \
+-var "vpc_id=$vpc_id" \
+-var "subnet=$subnet" \
+-var "ssh_port=$ssh_port"
+

@@ -1,0 +1,4 @@
+#!/bin/sh
+vncconfig -iconic &
+dbus-update-activation-environment --systemd DISPLAY
+startxfce4

@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+source .env
+
+aws --region eu-west-2 ec2 stop-instances \
+  --instance-ids "$(terraform output -raw id)"

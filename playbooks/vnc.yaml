@@ -1,0 +1,59 @@
+---
+- name: vnc desktop
+  hosts: all
+
+  vars_prompt:
+    - name: vnc_password
+      prompt: vnc password
+      private: yes
+
+  tasks:
+  # - name: apt upgrade
+  #   apt:
+  #     update_cache: yes
+  #     name: "*"
+  #     state: latest
+
+  - name: install packages
+    become: true
+    apt:
+      pkg:
+      - xfce4
+      - tigervnc-standalone-server
+      - seahorse
+
+  # - name: reboot
+  #   reboot:
+
+  - name: set vnc password
+    ansible.builtin.expect:
+      command: vncpasswd
+      responses:
+        (?i)would: n
+        (?i)password: "{{ vnc_password }}"
+        (?i)verify: "{{ vnc_password }}"
+      creates: ~/.vnc/passwd
+    no_log: true
+
+
+  - name: setup ~/.vnc/xstartup
+    ansible.builtin.template:
+      src: ../templates/xstartup
+      dest: ~/.vnc/xstartup
+      mode: 0774
+
+  - name: setup vncserver.service
+    become: true
+    ansible.builtin.template:
+      src: ../templates/vncserver@.service.j2
+      dest: /etc/systemd/system/vncserver@.service
+
+  - name: enable vnc service
+    become: true
+    ansible.builtin.systemd:
+      name: vncserver@1
+      daemon_reload: true
+      enabled: false
+      state: started
+
+

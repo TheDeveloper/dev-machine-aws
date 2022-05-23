@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+source ./.env
+
+ssh -t "$do_user@$machine_name" journalctl -f

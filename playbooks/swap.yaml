@@ -1,0 +1,40 @@
+---
+- name: swap
+  hosts: all
+
+  vars:
+    swap_file_size_mb: 5000
+    # swap_file_path: /tmp/swap
+    # swap_file_state: absent
+
+  roles:
+    - geerlingguy.swap
+
+  tasks:
+    - name: check active swaps
+      ansible.builtin.command: swapon -s
+      register: active_swaps
+
+    - name: enable swap
+      command: swapon {{ swap_file_path }}
+      when: active_swaps.stdout == ""
+
+    - name: disable sleep
+      ansible.builtin.systemd:
+        masked: yes
+        name: sleep
+
+    - name: disable suspend
+      ansible.builtin.systemd:
+        masked: yes
+        name: suspend
+
+    - name: disable hibernate
+      ansible.builtin.systemd:
+        masked: yes
+        name: hibernate
+
+    - name: disable hybrid-sleep
+      ansible.builtin.systemd:
+        masked: yes
+        name: hybrid-sleep

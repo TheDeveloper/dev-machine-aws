@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+source .venv/bin/activate
+source ./.env
+
+if [ -z "$github_access_token" ]
+then
+  echo -n "github access token for .npmrc: "
+  read -s github_access_token
+fi
+
+ansible-playbook \
+  -i "$machine_name," \
+  -u "$machine_user" \
+  -e "token=\"$github_access_token\"" \
+  playbooks/npmrc.yaml

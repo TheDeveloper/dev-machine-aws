@@ -1,0 +1,6 @@
+.terraform*
+.venv
+key
+key.pub
+node_modules
+dist

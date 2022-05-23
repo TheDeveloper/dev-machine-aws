@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+source .env
+
+rsync -r "$machine_name:/etc/ssh/{sshd_config,sshd_config.d}" configs/ssh/
+rsync "$machine_name:~/.vnc/xstartup" configs/vnc/

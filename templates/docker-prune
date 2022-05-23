@@ -1,0 +1,6 @@
+#!/bin/bash
+
+set -x
+
+docker stop $(docker ps -a -q)
+yes | docker system prune --volumes

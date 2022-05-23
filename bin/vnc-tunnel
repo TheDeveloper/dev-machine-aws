@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+source ./.env
+
+set -x
+
+ssh -L 59001:localhost:5901 -C -N -l "$machine_user" "$machine_name"

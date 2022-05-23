@@ -1,0 +1,11 @@
+---
+- name: zsh alias
+  hosts: all
+
+  tasks:
+    - name: git status alias
+      lineinfile:
+        path: ~/.zshrc
+        line: alias gs="git status"
+        create: true
+        mode: 0644

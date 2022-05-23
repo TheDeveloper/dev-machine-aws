@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+set -e
+
+source .venv/bin/activate
+source ./.env
+
+ansible-playbook \
+  -i "$machine_name," \
+  -u "$do_user" \
+  playbooks/upgrade.yaml

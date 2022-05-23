@@ -1,0 +1,51 @@
+#!/usr/bin/env bash
+
+set -e
+
+python3 -m venv .venv
+source .venv/bin/activate
+source .env
+
+set -x
+
+pip3 install wheel
+pip3 install ansible
+pip3 install "ansible-lint[yamllint]"
+pip3 install stormssh
+pip3 install passlib
+
+ansible-galaxy install diodonfrost.terraform
+ansible-galaxy install darkwizard242.awsvault
+ansible-galaxy install gantsign.antigen
+ansible-galaxy install gantsign.visual-studio-code
+ansible-galaxy install oefenweb.locales
+ansible-galaxy install geerlingguy.swap
+ansible-galaxy install geerlingguy.docker
+ansible-galaxy collection install community.general
+ansible-galaxy collection install community.crypto
+
+[ ! -f .env ] && cp .env.example .env
+
+terraform init
+
+# we need a key for terraform. if the machine is already
+# set up this key is not needed but the file must be present
+bin/reset-key
+
+# setup ssh config if machine already exists
+ip=$(terraform output -raw ip)
+
+if [ $? -eq 0 ]
+then
+  storm add "$machine_name" "$machine_user@$ip" \
+    --o "ForwardAgent=yes" \
+    --o "Port=$ssh_port" \
+    --o "StrictHostKeyChecking=no" \
+    --o "UserKnownHostsFile=/dev/null"
+
+  if [ ! -z "$WSL_DISTRO_NAME" ]
+  then
+    cp ~/.ssh/config "$wsl_path/.ssh/config"
+  fi
+
+fi

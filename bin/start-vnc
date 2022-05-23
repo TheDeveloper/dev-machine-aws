@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+set -e
+
+source .venv/bin/activate
+source ./.env
+
+bin/ssh ubuntu "sudo systemctl start vncserver@1"
+
+if [ $? ]
+then
+  echo "vnc started"
+fi

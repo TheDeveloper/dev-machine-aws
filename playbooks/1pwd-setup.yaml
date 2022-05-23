@@ -1,0 +1,22 @@
+---
+- name: 1pwd-setup
+  hosts: all
+
+  vars_prompt:
+    - name: email
+      prompt: email
+      private: yes
+    - name: secret
+      prompt: secret
+      private: yes
+    - name: master_password
+      prompt: master password
+      private: yes
+
+  tasks:
+    - name: setup
+      expect:
+        command: op signin https://my.1password.com {{ email }} {{ secret }}
+        responses:
+          (?i)Enter: "{{ master_password }}"
+      no_log: true

@@ -1,0 +1,16 @@
+---
+- name: base packages
+  hosts: all
+
+  tasks:
+    - name: install
+      apt:
+        pkg:
+          - unzip
+          - net-tools
+          - iftop
+          - nethogs
+          - iotop
+          - python3.8-venv
+          - python3-wheel
+          - neofetch

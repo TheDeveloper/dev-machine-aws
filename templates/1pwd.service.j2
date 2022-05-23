@@ -1,0 +1,11 @@
+[Unit]
+Description=1Password agent
+After=display-manager.service
+
+[Service]
+User={{ ansible_ssh_user }}
+ExecStart=/usr/bin/1password
+Environment=DISPLAY=:1
+
+[Install]
+WantedBy=multi-user.target

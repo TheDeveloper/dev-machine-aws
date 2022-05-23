@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+source .env
+
+path="$1"
+
+code --new-window --remote "ssh-remote+$machine_name" "$path"
