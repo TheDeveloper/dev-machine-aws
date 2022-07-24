@@ -2,14 +2,38 @@
 
 source .env
 
-export machine_passphrase
+get_ip() {
+  instance_id="$1"
+  aws ec2 describe-instances \
+    --instance-ids "$instance_id" \
+    --query 'Reservations[0].Instances[0].PublicIpAddress' \
+    --output text
+}
 
-aws --region eu-west-2 ec2 start-instances \
-  --instance-ids "$(terraform output -raw id)"
+export AWS_ACCESS_KEY_ID="$(terraform output -raw access_key)"
+export AWS_SECRET_ACCESS_KEY="$(terraform output -raw secret_key)"
+export AWS_REGION="$region"
+export instance_id="$(terraform output -raw id)"
+
+ip=$(get_ip $instance_id)
+
+if [ "$ip" != "None" ]; then
+  bin/ip "$ip"
+  bin/vscode
+  exit 0
+fi
+
+result=$(aws ec2 start-instances \
+  --output json \
+  --instance-ids "$instance_id")
 
 # pick up new ip
-bin/refresh
-bin/ip
+echo "waiting for ip..."
+sleep 5
+
+ip=$(get_ip $instance_id)
+
+bin/ip "$ip"
 
 bin/playbook wait-for-boot
 bin/vscode

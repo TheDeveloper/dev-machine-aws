@@ -54,6 +54,8 @@ resource "aws_instance" "instance" {
     aws_security_group.security_group.id,
   ]
 
+  iam_instance_profile = aws_iam_instance_profile.instance_profile.name
+
   root_block_device {
     volume_type           = "gp3"
     volume_size           = 20

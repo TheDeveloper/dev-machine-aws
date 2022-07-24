@@ -112,3 +112,10 @@ Resources are defined in the `.tf` files.
 * Firefox browser.
 * 1password.
 * Connect from mobile / tablet.
+
+# IAM user
+Used for starting and stopping the instance.
+```bash
+export AWS_ACCESS_KEY_ID="$(terraform output -raw access_key)"
+export AWS_SECRET_ACCESS_KEY="$(terraform output -raw secret_key)"
+```

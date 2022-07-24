@@ -1,9 +1,18 @@
 #!/usr/bin/env bash
+#
+# usage:
+#   bin/ip [new ip]
 
 source .venv/bin/activate
 source .env
 
-ip=$(terraform output -raw ip)
+if [ ! -z "$1" ]
+then
+  ip="$1"
+else
+  ip=$(terraform output -raw ip)
+fi
+
 echo $ip
 
 storm edit "$machine_name" "$machine_user@$ip" \

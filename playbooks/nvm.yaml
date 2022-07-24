@@ -29,4 +29,5 @@
             chdir: "$HOME"
             creates: "$HOME/.nvm/versions/node/v{{item}}"
           loop:
-            - 14.18.0
+            - 16.15.1
+            - 14.19.3
