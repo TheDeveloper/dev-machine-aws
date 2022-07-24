@@ -23,13 +23,6 @@ variable "ssh_port" {
   description = "ssh port"
 }
 
-variable "kms_key_arn" {
-  # aws/ebs
-  # https://eu-west-2.console.aws.amazon.com/kms/home#/kms/defaultKeys/
-  default = "arn:aws:kms:eu-west-2:<account-id>:key/<key-id>"
-  type    = string
-}
-
 variable "vol_size" {
   type        = string
   description = "volume size"
@@ -61,7 +54,6 @@ resource "aws_instance" "instance" {
     volume_size           = 20
     delete_on_termination = true
     encrypted             = true
-    kms_key_id            = var.kms_key_arn
     iops                  = 3000
     throughput            = 125
     tags = {
