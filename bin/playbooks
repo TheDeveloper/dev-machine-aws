@@ -85,6 +85,7 @@ ansible-playbook \
   -u "$machine_user" \
   playbooks/workspace.yaml
 
+# needs machine_user env as ansible_ssh_user is not available to roles
 ansible-playbook \
   -i "$machine_name," \
   -e "machine_user=$machine_user" \

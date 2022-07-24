@@ -5,7 +5,8 @@
   roles:
     - role: gantsign.antigen
       users:
-        - username: "{{ ansible_ssh_user }}"
+          # needs machine_user env as ansible_ssh_user is not available to roles.
+        - username: "{{ machine_user }}"
           antigen_libraries:
             - name: oh-my-zsh
           antigen_theme:
@@ -20,6 +21,6 @@
   tasks:
     - name: disable bell
       lineinfile:
-        path: /home/{{ ansible_ssh_user }}/.zshrc
+        path: /home/{{ machine_user }}/.zshrc
         line: unsetopt BEEP
         state: present
