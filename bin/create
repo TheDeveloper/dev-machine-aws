@@ -63,4 +63,4 @@ terraform apply \
   -var "subnet=$subnet" \
   -var "ssh_port=$ssh_port"
 
-source ./bin/playbooks
+./bin/playbooks
