@@ -165,7 +165,7 @@ ansible-playbook \
 
 AS_USER=ubuntu bin/playbook inactivity --extra-vars ssh_port="$ssh_port"
 
-bin/playbook brew --ask-become-pass
+bin/playbook brew -e "ansible_become_pass=$machine_passphrase"
 bin/playbook brew-package --extra-vars package=thefuck
 bin/playbook brew-package --extra-vars package=gh
 bin/playbook brew-package --extra-vars package=git
