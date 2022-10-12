@@ -2,7 +2,7 @@
 
 set -e
 
-python3 -m venv .venv
+python3.9 -m venv .venv
 source .venv/bin/activate
 source .env
 
@@ -32,11 +32,14 @@ terraform init
 # set up this key is not needed but the file must be present
 bin/reset-key
 
-# setup ssh config if machine already exists
-ip=$(terraform output -raw ip)
+setup_ssh_config() {
+  # setup ssh config if machine already exists
+  ip=$(terraform output -raw ip)
 
-if [ $? -eq 0 ]
-then
+  if [[ "$ip" =~ "No outputs" ]]; then
+    return 0
+  fi
+
   storm add "$machine_name" "$machine_user@$ip" \
     --o "ForwardAgent=yes" \
     --o "Port=$ssh_port" \
@@ -47,5 +50,6 @@ then
   then
     cp ~/.ssh/config "$wsl_path/.ssh/config"
   fi
+}
 
-fi
+setup_ssh_config
