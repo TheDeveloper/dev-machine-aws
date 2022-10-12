@@ -34,7 +34,7 @@ Install terraform with homebrew or linuxbrew:
 
     brew install terraform
 
-Other downloads: https://learn.hashicorp.com/tutorials/terraform/install-cli
+Or download direct: https://learn.hashicorp.com/tutorials/terraform/install-cli
 
 Fork this repo and clone locally. Then run:
 
