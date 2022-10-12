@@ -1,0 +1,143 @@
+---
+- name: lunarvim
+  hosts: all
+
+  tasks:
+    - name: check if .zshrc exists
+      stat:
+        path: ~/.zshrc
+      register: zshrc
+
+    - name: check if .bashrc exists
+      stat:
+        path: ~/.bashrc
+      register: bashrc
+
+
+
+    # neovim
+    - name: check neovim exists
+      shell: nvim --version
+      register: neovim
+      ignore_errors: true
+
+    - name: setup neovim
+      become: true
+      shell: |
+        curl -o ./nvim-linux64.deb -L https://github.com/neovim/neovim/releases/download/stable/nvim-linux64.deb
+        apt install ./nvim-linux64.deb
+      when: neovim.rc != 0
+
+
+
+    # rust
+    - name: check cargo exists
+      shell: command -v cargo
+      register: cargo_exists
+      ignore_errors: true
+
+    - name: setup rust
+      become: true
+      shell: curl https://sh.rustup.rs -sSf | sh -s -- -y
+      when: cargo_exists is failed
+
+
+
+    # bash language server
+    - name: check bash-language-server exists
+      shell: command -v bash-language-server
+      register: bash_language_server_exists
+      ignore_errors: true
+
+    - name: install bash-language-server
+      when: bash_language_server_exists is failed
+      npm:
+        name: bash-language-server
+        global: yes
+
+
+
+
+    # lua language server
+    # - name: check lua-language-server exists
+    #   shell: command -v lua-language-server
+    #   register: lua_language_server_exists
+    #   ignore_errors: true
+
+    # - name: setup lua-language-server
+    #   when: lua_language_server_exists is failed
+    #   block:
+    #   - name: download lua-language-server
+    #     get_url:
+    #       url: https://github.com/sumneko/lua-language-server/releases/download/3.5.6/lua-language-server-3.5.6-linux-x64.tar.gz
+    #       dest: /tmp/lua-language-server.tar.gz
+
+    #   - name: create lua-language-server directory
+    #     file:
+    #       path: ~/lua-language-server
+    #       state: directory
+
+    #   - name: extract lua-language-server
+    #     unarchive:
+    #       src: /tmp/lua-language-server.tar.gz
+    #       dest: ~/lua-language-server
+    #       remote_src: true
+
+      # - name: add lua-language-server to ~/.zshrc
+      #   when: bashrc.stat.exists
+      #   lineinfile:
+      #     path: ~/.bashrc
+      #     line: 'export PATH=$PATH:$HOME/lua-language-server/bin'
+
+      # - name: add lua-language-server to ~/.zshrc
+      #   lineinfile:
+      #     path: ~/.zshrc
+      #     line: 'export PATH=$PATH:$HOME/lua-language-server/bin'
+      #   when: zshrc.stat.exists
+
+    - name: brew install lua-language-server
+      homebrew:
+        name: lua-language-server
+        state: present
+
+    - name: brew install bash-language-server
+      homebrew:
+        name: bash-language-server
+        state: present
+
+    - name: brew install terraform-ls
+      homebrew:
+        name: terraform-ls
+        state: present
+
+
+    # lunarvim
+    - name: check lunarvim exists
+      shell: command -v lvim
+      register: lunarvim_exists
+      ignore_errors: true
+
+    - name: setup lunarvim
+      when: lunarvim_exists is failed
+      block:
+        - name: get lunarvim setup script
+          get_url:
+            url: https://raw.githubusercontent.com/lunarvim/lunarvim/master/utils/installer/install.sh
+            dest: /tmp/lunarvim-install.sh
+            mode: 0755
+            force: yes
+
+        - name: install lunarvim
+          shell: /tmp/lunarvim-install.sh
+
+        - name: add lunarvim to .zshrc
+          lineinfile:
+            path: ~/.zshrc
+            line: export PATH="$HOME/.local/bin:$PATH"
+          when: zshrc.stat.exists
+
+        - name: add lunarvim to .bashrc
+          lineinfile:
+            path: ~/.bashrc
+            line: export PATH="$HOME/.local/bin:$PATH"
+          when: bashrc.stat.exists
