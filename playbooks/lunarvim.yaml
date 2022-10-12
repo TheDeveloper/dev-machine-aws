@@ -16,44 +16,44 @@
 
 
     # neovim
-    - name: check neovim exists
-      shell: nvim --version
-      register: neovim
-      ignore_errors: true
+    # - name: check neovim exists
+    #   shell: nvim --version
+    #   register: neovim
+    #   ignore_errors: true
 
-    - name: setup neovim
-      become: true
-      shell: |
-        curl -o ./nvim-linux64.deb -L https://github.com/neovim/neovim/releases/download/stable/nvim-linux64.deb
-        apt install ./nvim-linux64.deb
-      when: neovim.rc != 0
-
-
-
-    # rust
-    - name: check cargo exists
-      shell: command -v cargo
-      register: cargo_exists
-      ignore_errors: true
-
-    - name: setup rust
-      become: true
-      shell: curl https://sh.rustup.rs -sSf | sh -s -- -y
-      when: cargo_exists is failed
+    # - name: setup neovim
+    #   become: true
+    #   shell: |
+    #     curl -o ./nvim-linux64.deb -L https://github.com/neovim/neovim/releases/download/stable/nvim-linux64.deb
+    #     apt install ./nvim-linux64.deb
+    #   when: neovim.rc != 0
 
 
 
-    # bash language server
-    - name: check bash-language-server exists
-      shell: command -v bash-language-server
-      register: bash_language_server_exists
-      ignore_errors: true
+    # # rust
+    # - name: check cargo exists
+    #   shell: command -v cargo
+    #   register: cargo_exists
+    #   ignore_errors: true
 
-    - name: install bash-language-server
-      when: bash_language_server_exists is failed
-      npm:
-        name: bash-language-server
-        global: yes
+    # - name: setup rust
+    #   become: true
+    #   shell: curl https://sh.rustup.rs -sSf | sh -s -- -y
+    #   when: cargo_exists is failed
+
+
+
+    # # bash language server
+    # - name: check bash-language-server exists
+    #   shell: command -v bash-language-server
+    #   register: bash_language_server_exists
+    #   ignore_errors: true
+
+    # - name: install bash-language-server
+    #   when: bash_language_server_exists is failed
+    #   npm:
+    #     name: bash-language-server
+    #     global: yes
 
 
 
@@ -94,6 +94,16 @@
       #     path: ~/.zshrc
       #     line: 'export PATH=$PATH:$HOME/lua-language-server/bin'
       #   when: zshrc.stat.exists
+
+    - name: brew install rust
+      homebrew:
+        name: rust
+        state: present
+
+    - name: install neovim
+      homebrew:
+        name: neovim
+        state: present
 
     - name: brew install lua-language-server
       homebrew:
