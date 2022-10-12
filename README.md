@@ -36,7 +36,9 @@
 
     Or download direct: https://learn.hashicorp.com/tutorials/terraform/install-cli
 
-3. Install `aws-vault` for AWS authentication: https://github.com/99designs/aws-vault#installing
+3. Set up `aws-vault` for AWS authentication:
+    * https://github.com/99designs/aws-vault#installing
+    * https://github.com/99designs/aws-vault#quick-start
 
 4. Fork this repo and clone locally. Then run:
 
