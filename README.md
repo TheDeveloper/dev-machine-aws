@@ -28,7 +28,7 @@
 
 1. Install python:
 
-        sudo apt install -y python3 python3-pip
+        sudo apt install -y python3.9 python3.9-venv python3-pip
 
 2. Install terraform with homebrew or linuxbrew:
 
