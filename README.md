@@ -44,7 +44,7 @@ Fork this repo and clone locally. Then run:
 
 This will install ansible and dependencies.
 
-Set up vscode extensions:
+[Optional] set up vscode extensions:
 
   * ansible - https://marketplace.visualstudio.com/items?itemName=redhat.ansible
   * terraform - https://marketplace.visualstudio.com/items?itemName=HashiCorp.terraform
