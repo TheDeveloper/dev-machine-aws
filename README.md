@@ -69,7 +69,7 @@ These examples use [`aws-vault`](https://github.com/99designs/aws-vault#quick-st
 
 This will show you a preview of resources to set up in AWS and ask to confirm.
 
-Once you confirm it will provision resources in aws and setup the machine.
+Once you confirm, it will provision resources and set up the machine.
 
 # Run a playbook
 ```bash
