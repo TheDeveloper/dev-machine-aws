@@ -3,6 +3,30 @@
   hosts: all
 
   tasks:
+    - name: powerline fonts
+      become: true
+      apt:
+        name: fonts-powerline
+        state: present
+
+    - name: install nerdfonts
+      shell: |
+        [ ! -d ~/.nerd-fonts ] && git clone --filter=blob:none --sparse https://github.com/ryanoasis/nerd-fonts ~/.nerd-fonts
+        cd ~/.nerd-fonts
+
+        install_font() {
+          if [ ! -d "patched-fonts/$1" ]; then
+            git sparse-checkout add "patched-fonts/$1"
+            ./install.sh "$1"
+          fi
+        }
+
+        install_font JetBrainsMono
+        install_font Hack
+        install_font Mononoki
+        install_font FiraCode
+        install_font FiraMono
+
     - name: check if .zshrc exists
       stat:
         path: ~/.zshrc
