@@ -26,23 +26,25 @@
 
 # Install
 
-Install python:
+1. Install python:
 
-    sudo apt install -y python3 python3-pip
+        sudo apt install -y python3 python3-pip
 
-Install terraform with homebrew or linuxbrew:
+2. Install terraform with homebrew or linuxbrew:
 
-    brew install terraform
+        brew install terraform
 
-Or download direct: https://learn.hashicorp.com/tutorials/terraform/install-cli
+    Or download direct: https://learn.hashicorp.com/tutorials/terraform/install-cli
 
-Fork this repo and clone locally. Then run:
+3. Install `aws-vault` for AWS authentication: https://github.com/99designs/aws-vault#installing
 
-```bash
-./bin/setup
-```
+4. Fork this repo and clone locally. Then run:
 
-This will install ansible and dependencies.
+    ```bash
+    ./bin/setup
+    ```
+
+    This will install ansible and dependencies.
 
 [Optional] set up vscode extensions:
 
@@ -61,7 +63,7 @@ aws-vault exec <your-profile> -- ./bin/create
 ```
 
 **NOTE -**
-These examples use `aws-vault` for aws access. You can omit this if you use another method of authentication, or already have AWS credentials in your environment.
+These examples use [`aws-vault`](https://github.com/99designs/aws-vault#quick-start) for aws access. You can omit this if you use another method of authentication, or already have AWS credentials in your environment.
 
 This will show you a preview of resources to set up in AWS and ask to confirm.
 
