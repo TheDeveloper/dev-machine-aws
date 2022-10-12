@@ -26,7 +26,15 @@
 
 # Install
 
-Make sure you have terraform installed https://learn.hashicorp.com/tutorials/terraform/install-cli
+Install python:
+
+    sudo apt install -y python3 python3-pip
+
+Install terraform with homebrew or linuxbrew:
+
+    brew install terraform
+
+Other downloads: https://learn.hashicorp.com/tutorials/terraform/install-cli
 
 Fork this repo and clone locally. Then run:
 
@@ -35,6 +43,11 @@ Fork this repo and clone locally. Then run:
 ```
 
 This will install ansible and dependencies.
+
+Set up vscode extensions:
+
+  * ansible - https://marketplace.visualstudio.com/items?itemName=redhat.ansible
+  * terraform - https://marketplace.visualstudio.com/items?itemName=HashiCorp.terraform
 
 # Create new machine
 ```bash
